@@ -91,7 +91,7 @@ namespace ignition
       }
 
       // Attempt to load the library at this path
-      void *dlHandle = this->dataPtr->LoadLibrary(_pathToLibrary);
+      auto dlHandle = this->dataPtr->LoadLibrary(_pathToLibrary);
       if (nullptr != dlHandle)
       {
         // Found a shared library, does it have the symbols we're looking for?
@@ -181,8 +181,11 @@ namespace ignition
     /////////////////////////////////////////////////
     void* PluginLoaderPrivate::LoadLibrary(const std::string &_full_path) const
     {
-      // Somehow this works on windows builds?
+#ifdef _WIN32
+      return LoadLibrary(_full_path.c_str());
+#else
       return dlopen(_full_path.c_str(), RTLD_LAZY|RTLD_GLOBAL);
+#endif
     }
 
     /////////////////////////////////////////////////
