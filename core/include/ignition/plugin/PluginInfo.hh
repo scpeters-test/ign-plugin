@@ -34,7 +34,7 @@ namespace ignition
 
 
     /// \brief Holds info required to construct a plugin
-    struct PluginInfo
+    struct IGNITION_COMMON_VISIBLE PluginInfo
     {
       /// \brief the name of the plugin
       std::string name;
