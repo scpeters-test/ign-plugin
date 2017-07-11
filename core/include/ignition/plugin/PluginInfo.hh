@@ -22,6 +22,8 @@
 #include <functional>
 #include <string>
 
+#include <ignition/common/System.hh>
+
 namespace ignition
 {
   namespace common
