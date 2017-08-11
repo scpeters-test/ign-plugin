@@ -180,34 +180,14 @@ namespace ignition
 
     namespace detail
     {
-      template <class... OtherBases>
-      class ComposePlugin
-      {
-        public: virtual ~ComposePlugin() = default;
-      };
-
-      template <class Base1>
-      class ComposePlugin<Base1> : public virtual Base1
-      {
-        // Declare friendship
-        template <class...> friend class SpecializedPlugin;
-        template <class...> friend class ComposePlugin;
-
-        /// \brief Default destructor
-        public: virtual ~ComposePlugin() = default;
-
-        public: ComposePlugin() = default;
-      };
-
 
       template <class Base1, class Base2>
-      class ComposePlugin<Base1, Base2> :
+      class ComposePlugin :
           public virtual Base1,
           public virtual Base2
       {
         // Declare friendship
         template <class...> friend class SpecializedPlugin;
-        template <class...> friend class ComposePlugin;
 
         /// \brief Default destructor
         public: virtual ~ComposePlugin() = default;
@@ -259,31 +239,10 @@ DETAIL_IGN_COMMON_COMPOSEPLUGIN_DISPATCH(
 
         // Declare friendship
         template <class...> friend class SpecializedPlugin;
-        template <class...> friend class ComposePlugin;
 
-        private: ComposePlugin() = default;
-      };
-
-      template <class Base1, class Base2, class... OtherBases>
-      class ComposePlugin<Base1, Base2, OtherBases...> :
-          public virtual ComposePlugin<
-            Base1, ComposePlugin<Base2, OtherBases...> >
-      {
-        // Declare friendship
-        template <class...> friend class SpecializedPlugin;
-        template <class...> friend class ComposePlugin;
-
-        /// \brief Virtual destructor
-        public: virtual ~ComposePlugin() = default;
-
-        using Base =
-            ComposePlugin< Base1, ComposePlugin<Base2, OtherBases...> >;
-
-        /// \brief Default constructor
-        private: ComposePlugin() = default;
+        protected: ComposePlugin() {};
       };
     }
-
     template <class SpecInterface1, class... OtherSpecInterfaces>
     class SpecializedPlugin<SpecInterface1, OtherSpecInterfaces...> :
         public virtual detail::ComposePlugin<
@@ -292,7 +251,7 @@ DETAIL_IGN_COMMON_COMPOSEPLUGIN_DISPATCH(
     {
       // Declare friendship
       template <class...> friend class SpecializedPlugin;
-      template <class...> friend class detail::ComposePlugin;
+      template <class B1, class B2> friend class detail::ComposePlugin;
       template <class> friend class TemplatePluginPtr;
 
       /// \brief Default constructor

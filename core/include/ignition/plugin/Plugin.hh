@@ -30,7 +30,7 @@ namespace ignition
     // Forward declarations
     struct PluginInfo;
     class PluginPrivate;
-    namespace detail { template <class...> class ComposePlugin; }
+    namespace detail { template <class B1, class B2> class ComposePlugin; }
 
     class Plugin
     {
@@ -107,7 +107,7 @@ namespace ignition
 
       template <class> friend class TemplatePluginPtr;
       template <class...> friend class SpecializedPlugin;
-      template <class...> friend class detail::ComposePlugin;
+      template <class B1, class B2> friend class detail::ComposePlugin;
 
       /// \brief Default constructor. This is kept private to ensure that
       /// Plugins are always managed by a PluginPtr object.
