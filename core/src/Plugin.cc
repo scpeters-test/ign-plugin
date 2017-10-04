@@ -29,20 +29,6 @@ namespace ignition
     {
       /// \brief Map from interface names to their locations within the plugin
       /// instance
-      //
-      // Dev Note (MXG): We use std::map here instead of std::unordered_map
-      // because iterators to a std::map are not invalidated by the insertion
-      // operation (whereas all iterators to a std::unordered_map are
-      // potentially invalidated each time an insertion is performed on the
-      // std::unordered_map). Holding onto valid iterators allows us to do
-      // optimizations with template magic to provide direct access to
-      // interfaces whose availability we can anticipate at run time.
-      //
-      // It is also worth noting that ordered vs unordered lookup time is very
-      // similar on sets where the strings have relatively small lengths (5-20
-      // characters) and a relatively small number of entries in the set (5-20
-      // entries). Those conditions match our expected use case here. In fact,
-      // ordered lookup can sometimes outperform unordered in these conditions.
       public: Plugin::InterfaceMap interfaces;
 
       /// \brief shared_ptr which manages the lifecycle of the plugin instance.
@@ -53,15 +39,7 @@ namespace ignition
       public: void Clear()
               {
                 this->pluginInstancePtr.reset();
-
-                // Dev note (MXG): We must NOT call clear() on the InterfaceMap
-                // or remove ANY of the map entries, because that would
-                // potentially invalidate all of the iterators that are pointing
-                // to map entries. This would break any specialized plugins that
-                // provide instant access to specialized interfaces. Instead, we
-                // simply overwrite the map entries with a nullptr.
-                for (auto& entry : this->interfaces)
-                  entry.second = nullptr;
+                this->interfaces.clear();
               }
 
       /// \brief Initialize this PluginPtrPrivate using some PluginInfo instance
@@ -88,35 +66,6 @@ namespace ignition
                   }
                 }
               }
-
-      /// \brief Initialize this PluginPtrPrivate using another instance
-      public: void Initialize(const PluginPrivate *_other)
-              {
-                this->Clear();
-
-                if (!_other)
-                {
-                  ignerr << "Received a nullptr _other in the constructor "
-                         << "which uses `const PluginPtrPrivate*`. This should "
-                         << "not be possible! Please report this bug."
-                         << std::endl;
-                  assert(false);
-                  return;
-                }
-
-                this->pluginInstancePtr = _other->pluginInstancePtr;
-
-                if (this->pluginInstancePtr)
-                {
-                  for (const auto &entry : _other->interfaces)
-                  {
-                    // entry.first:  name of the interface
-                    // entry.second: pointer to the location of that interface
-                    //               within the plugin instance
-                    this->interfaces[entry.first] = entry.second;
-                  }
-                }
-              }
     };
 
     //////////////////////////////////////////////////
@@ -135,6 +84,12 @@ namespace ignition
     }
 
     //////////////////////////////////////////////////
+    Plugin::Plugin(const PluginInfo &_info) : Plugin()
+    {
+      this->dataPtr->Initialize(&_info);
+    }
+
+    //////////////////////////////////////////////////
     void *Plugin::PrivateGetInterface(
         const std::string &_interfaceName) const
     {
@@ -144,34 +99,6 @@ namespace ignition
         return nullptr;
 
       return it->second;
-    }
-
-    //////////////////////////////////////////////////
-    void Plugin::PrivateCopyPluginInstance(const Plugin &_other) const
-    {
-      this->dataPtr->Initialize(_other.dataPtr.get());
-    }
-
-    //////////////////////////////////////////////////
-    void Plugin::PrivateSetPluginInstance(const PluginInfo *_info) const
-    {
-      this->dataPtr->Initialize(_info);
-    }
-
-    //////////////////////////////////////////////////
-    const std::shared_ptr<void> &Plugin::PrivateGetInstancePtr() const
-    {
-      return this->dataPtr->pluginInstancePtr;
-    }
-
-    //////////////////////////////////////////////////
-    Plugin::InterfaceMap::iterator Plugin::PrivateGetOrCreateIterator(
-        const std::string &_interfaceName)
-    {
-      // We want to use the insert function here to avoid accidentally
-      // overwriting a value which might exist at the desired map key.
-      return this->dataPtr->interfaces.insert(
-            std::make_pair(NormalizeName(_interfaceName), nullptr)).first;
     }
 
     //////////////////////////////////////////////////

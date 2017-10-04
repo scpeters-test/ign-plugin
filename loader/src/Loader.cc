@@ -23,7 +23,7 @@
 #include <unordered_map>
 
 #include "ignition/common/Console.hh"
-#include "ignition/common/PluginPtr.hh"
+#include "ignition/common/Plugin.hh"
 #include "ignition/common/PluginInfo.hh"
 #include "ignition/common/PluginLoader.hh"
 #include "ignition/common/StringUtils.hh"
@@ -172,14 +172,7 @@ namespace ignition
     }
 
     /////////////////////////////////////////////////
-    PluginPtr PluginLoader::Instantiate(
-        const std::string &_plugin) const
-    {
-      return PluginPtr(this->PrivateGetPluginInfo(_plugin));
-    }
-
-    /////////////////////////////////////////////////
-    const PluginInfo *PluginLoader::PrivateGetPluginInfo(
+    std::shared_ptr<Plugin> PluginLoader::Instantiate(
         const std::string &_pluginName) const
     {
       const std::string plugin = NormalizeName(_pluginName);
@@ -188,9 +181,10 @@ namespace ignition
           this->dataPtr->plugins.find(plugin);
 
       if (this->dataPtr->plugins.end() == it)
-        return nullptr;
+        return std::shared_ptr<Plugin>();
 
-      return &(it->second);
+      PluginInfo info = it->second;
+      return std::shared_ptr<Plugin>(new Plugin(info));
     }
 
     /////////////////////////////////////////////////

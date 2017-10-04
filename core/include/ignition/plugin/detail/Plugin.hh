@@ -27,74 +27,36 @@ namespace ignition
   namespace common
   {
     //////////////////////////////////////////////////
-    template <class Interface>
-    Interface *Plugin::GetInterface()
+    template <class I>
+    I *Plugin::Interface()
     {
-      return static_cast<Interface*>(
-            this->PrivateGetInterface(Interface::IGNCOMMONInterfaceName));
+      return static_cast<I*>(
+            this->Interface(I::IGNCOMMONInterfaceName));
     }
 
     //////////////////////////////////////////////////
-    template <class Interface>
-    const Interface *Plugin::GetInterface() const
+    template <class I>
+    const I * Plugin::Interface() const
     {
-      return static_cast<const Interface*>(
-            this->PrivateGetInterface(Interface::IGNCOMMONInterfaceName));
+      return static_cast<const I *>(
+            this->PrivateGetInterface(I::IGNCOMMONInterfaceName));
     }
 
     //////////////////////////////////////////////////
-    template <class Interface>
-    Interface *Plugin::GetInterface(const std::string &_interfaceName)
+    template <class I>
+    I *Plugin::Interface(const std::string &_interfaceName)
     {
-      return static_cast<Interface*>(
+      return static_cast<I*>(
             this->PrivateGetInterface(_interfaceName));
     }
 
     //////////////////////////////////////////////////
-    template <class Interface>
-    const Interface *Plugin::GetInterface(
+    template <class I>
+    const I * Plugin::Interface(
         const std::string &_interfaceName) const
     {
-      return static_cast<const Interface*>(
+      return static_cast<const I *>(
             this->PrivateGetInterface(_interfaceName));
-    }
-
-    //////////////////////////////////////////////////
-    template <class Interface>
-    std::shared_ptr<Interface> Plugin::as_shared_ptr()
-    {
-      return this->as_shared_ptr<Interface>(Interface::IGNCOMMONInterfaceName);
-    }
-
-    //////////////////////////////////////////////////
-    template <class Interface>
-    std::shared_ptr<const Interface> Plugin::as_shared_ptr() const
-    {
-      return this->as_shared_ptr<Interface>(Interface::IGNCOMMONInterfaceName);
-    }
-
-    //////////////////////////////////////////////////
-    template <class Interface>
-    std::shared_ptr<Interface> Plugin::as_shared_ptr(
-        const std::string &_interfaceName)
-    {
-      Interface *ptr = this->GetInterface<Interface>(_interfaceName);
-      if (ptr)
-        return std::shared_ptr<Interface>(this->PrivateGetInstancePtr(), ptr);
-
-      return nullptr;
-    }
-
-    //////////////////////////////////////////////////
-    template <class Interface>
-    std::shared_ptr<const Interface> Plugin::as_shared_ptr(
-        const std::string &_interfaceName) const
-    {
-      const Interface *ptr = this->GetInterface<Interface>(_interfaceName);
-      if (ptr)
-        return std::shared_ptr<Interface>(this->PrivateGetInstancePtr(), ptr);
-
-      return nullptr;
     }
 
     //////////////////////////////////////////////////
@@ -102,13 +64,6 @@ namespace ignition
     bool Plugin::HasInterface() const
     {
       return this->HasInterface(Interface::IGNCOMMONInterfaceName);
-    }
-
-    //////////////////////////////////////////////////
-    template <class Interface>
-    constexpr bool Plugin::IsSpecializedFor()
-    {
-      return false;
     }
   }
 }

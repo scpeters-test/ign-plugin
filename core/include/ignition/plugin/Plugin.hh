@@ -30,7 +30,7 @@ namespace ignition
     // Forward declarations
     struct PluginInfo;
     class PluginPrivate;
-    namespace detail { template <class, class> class ComposePlugin; }
+    class PluginLoader;
 
     class Plugin
     {
@@ -39,53 +39,30 @@ namespace ignition
       /// \brief Get an interface of the specified type. Note that this function
       /// only works when the Interface type is specialized using the macro
       /// IGN_COMMON_SPECIALIZE_INTERFACE. For more general  interfaces which do
-      /// not meet this condition, use GetInterface<Interface>(_interfaceName).
-      public: template <class Interface>
-              Interface *GetInterface();
+      /// not meet this condition, use Interface<I>(_interfaceName).
+      public: template <class I>
+      I *Interface();
 
-      /// \brief const-qualified version of GetInterface<Interface>()
-      public: template <class Interface>
-              const Interface *GetInterface() const;
+      /// \brief const-qualified version of Interface<I>()
+      public: template <class I>
+      const I * Interface() const;
 
       /// \brief Get an interface with the given name, casted to the specified
       /// class type.
-      public: template <class Interface>
-              Interface *GetInterface(const std::string &_interfaceName);
+      public: template <class I>
+      I *Interface(const std::string &_interfaceName);
 
-      /// \brief const-qualified version of GetInterface<Interface>(std::string)
-      public: template <class Interface>
-              const Interface *GetInterface(
-                  const std::string &_interfaceName) const;
+      /// \brief const-qualified version of Interface<I>()
+      public: template <class I>
+      const I * Interface(const std::string &_interfaceName) const;
 
-      /// \brief Get the requested interface as a std::shared_ptr. Note that
-      /// this function only works when the Interface type is specialized using
-      /// the macro IGN_COMMON_SPECIALIZE_INTERFACE. For more general interfaces
-      /// which do not meet this condition, use
-      /// as_shared_ptr<Interface>(_interfaceName).
-      public: template <class Interface>
-              std::shared_ptr<Interface> as_shared_ptr();
+      public: using InterfaceMap = std::map<std::string, void*>;
 
-      /// \brief Same as as_shared_ptr<Interface>(), but it returns a
-      /// std::shared_ptr to a const-qualified Interface.
-      public: template <class Interface>
-              std::shared_ptr<const Interface> as_shared_ptr() const;
-
-      /// \brief Get the requested interface as a std::shared_ptr.
-      public: template <class Interface>
-              std::shared_ptr<Interface> as_shared_ptr(
-                  const std::string &_interfaceName);
-
-      /// \brief Same as as_shared_ptr<Interface>(std::string), but it returns a
-      /// std::shared_ptr to a const-qualified Interface.
-      public: template <class Interface>
-              std::shared_ptr<const Interface> as_shared_ptr(
-                  const std::string &_interfaceName) const;
-
-      /// \brief Returns true if this PluginPtr has the specified type of
+      /// \brief Returns true if this Plugin has the specified type of
       /// interface. Note that this function only works when the Interface type
       /// is specialized using the macro IGN_COMMON_SPECIALIZE_INTERFACE. For
       /// more general interfaces which do not meet this condition, use
-      /// GetInterface<Interface>(_interfaceName).
+      /// Interface<Interface>(_interfaceName).
       public: template <class Interface>
               bool HasInterface() const;
 
@@ -93,47 +70,19 @@ namespace ignition
       /// interface.
       public: bool HasInterface(const std::string &_interfaceName) const;
 
-      /// \brief This function always returns false if it is called on this
-      /// basic PluginPtr class type. The SpecializedPluginPtr can shadow this
-      /// to return true when it is specialized for this Interface type, however
-      /// the function must be called on the SpecializedPluginPtr type and not
-      /// this base class type, because this is a shadowed function, not a
-      /// virtual function.
-      public: template <class Interface>
-              static constexpr bool IsSpecializedFor();
-
-
       // -------------------- Private API -----------------------
-
-      template <class> friend class TemplatePluginPtr;
-      template <class...> friend class SpecializedPlugin;
-      template <class...> friend class detail::ComposePlugin;
+      friend class PluginLoader;
 
       /// \brief Default constructor. This is kept private to ensure that
-      /// Plugins are always managed by a PluginPtr object.
+      /// Plugins are always managed by a PluginLoader object
       private: Plugin();
+
+      /// \brief Construct a plugin using plugin info from loader
+      private: explicit Plugin(const PluginInfo &_info);
 
       /// \brief Type-agnostic retriever for interfaces
       private: void *PrivateGetInterface(
                   const std::string &_interfaceName) const;
-
-      /// \brief Copy the plugin instance from another Plugin object
-      private: void PrivateCopyPluginInstance(const Plugin &_other) const;
-
-      /// \brief Create a new plugin instance based on the info provided
-      private: void PrivateSetPluginInstance(const PluginInfo *_info) const;
-
-      /// \brief Get a reference to the std::shared_ptr being managed by this
-      /// wrapper
-      private: const std::shared_ptr<void>& PrivateGetInstancePtr() const;
-
-
-      public: using InterfaceMap = std::map<std::string, void*>;
-
-      /// \brief Get or create an iterator to the std::map that holds pointers
-      /// to the various interfaces provided by this plugin instance.
-      private: InterfaceMap::iterator PrivateGetOrCreateIterator(
-          const std::string &_interfaceName);
 
       /// \brief PIMPL pointer to the implementation of this class.
       private: const std::unique_ptr<PluginPrivate> dataPtr;
