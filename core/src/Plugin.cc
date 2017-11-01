@@ -137,7 +137,7 @@ namespace ignition
     }
 
     //////////////////////////////////////////////////
-    void *Plugin::PrivateGetInterface(
+    void *Plugin::PrivateInterface(
         const std::string &_interfaceName) const
     {
       const std::string interfaceName = NormalizeName(_interfaceName);
