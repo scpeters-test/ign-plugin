@@ -27,3 +27,5 @@ foreach(test ${test_targets})
     "IGN_PLUGIN_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\"")
 
 endforeach()
+
+add_subdirectory(include/ignition/plugin)
