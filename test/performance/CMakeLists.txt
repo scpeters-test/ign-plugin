@@ -7,14 +7,16 @@ if("${CMAKE_BUILD_TYPE_UPPERCASE}" STREQUAL "COVERAGE")
     plugin_specialization.cc)
 endif()
 
-ign_build_tests(
-  TYPE PERFORMANCE
-  SOURCES ${tests}
-  LIB_DEPS
-    ${PROJECT_LIBRARY_TARGET_NAME}-loader
-   TEST_LIST test_targets)
-
-foreach(test ${test_targets})
-  target_compile_definitions(${test} PRIVATE
-    "IGNDummyPlugin_LIB=\"$<TARGET_FILE:IGNDummyPlugins>\"")
-endforeach()
+if (NOT WIN32)
+  ign_build_tests(
+    TYPE PERFORMANCE
+    SOURCES ${tests}
+    LIB_DEPS
+      ${PROJECT_LIBRARY_TARGET_NAME}-loader
+     TEST_LIST test_targets)
+  
+  foreach(test ${test_targets})
+    target_compile_definitions(${test} PRIVATE
+      "IGNDummyPlugin_LIB=\"$<TARGET_FILE:IGNDummyPlugins>\"")
+  endforeach()
+endif()
