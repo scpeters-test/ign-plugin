@@ -101,7 +101,6 @@ void TestSetAndGet(const ignition::plugin::Loader &_pl,
     EXPECT_EQ(_valueToUse, getter->Get());
   }
 }
-#endif
 
 /////////////////////////////////////////////////
 TEST(TemplatedPlugins, SetAndGet)
@@ -112,6 +111,7 @@ TEST(TemplatedPlugins, SetAndGet)
   TestSetAndGet<int>(pl, 120);
   TestSetAndGet<std::string>(pl, "some amazing string");
 }
+#endif
 
 /////////////////////////////////////////////////
 int main(int argc, char **argv)
