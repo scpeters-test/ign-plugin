@@ -59,7 +59,7 @@ TEST(TemplatedPlugins, InterfaceCount)
       pl.PluginsImplementing< TemplatedSetInterface<double> >().size();
   EXPECT_EQ(0u, setDoubleCount);
 }
-
+/*
 /////////////////////////////////////////////////
 template<typename T>
 using SetAndGetPluginPtr = ignition::plugin::SpecializedPluginPtr<
@@ -110,7 +110,7 @@ TEST(TemplatedPlugins, SetAndGet)
   TestSetAndGet<int>(pl, 120);
   TestSetAndGet<std::string>(pl, "some amazing string");
 }
-
+*/
 
 /////////////////////////////////////////////////
 int main(int argc, char **argv)
