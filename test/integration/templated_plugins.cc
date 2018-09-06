@@ -60,7 +60,6 @@ TEST(TemplatedPlugins, InterfaceCount)
   EXPECT_EQ(0u, setDoubleCount);
 }
 
-#ifndef _WIN32
 /////////////////////////////////////////////////
 template<typename T>
 using SetAndGetPluginPtr = ignition::plugin::SpecializedPluginPtr<
@@ -111,7 +110,6 @@ TEST(TemplatedPlugins, SetAndGet)
   TestSetAndGet<int>(pl, 120);
   TestSetAndGet<std::string>(pl, "some amazing string");
 }
-#endif
 
 /////////////////////////////////////////////////
 int main(int argc, char **argv)
