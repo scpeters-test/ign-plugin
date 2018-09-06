@@ -1,4 +1,3 @@
-if (NOT WIN32)
   # Build gtest
   add_library(gtest STATIC gtest/src/gtest-all.cc)
   add_library(gtest_main STATIC gtest/src/gtest_main.cc)
@@ -7,6 +6,7 @@ if (NOT WIN32)
     PUBLIC "${CMAKE_CURRENT_LIST_DIR}/gtest/include"
     PRIVATE "${CMAKE_CURRENT_LIST_DIR}/gtest")
   
+if (NOT WIN32)
   add_subdirectory(performance)
   add_subdirectory(integration)
   add_subdirectory(static_assertions)
